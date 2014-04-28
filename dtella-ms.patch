@@ -1,0 +1,79 @@
+--- a/dtella/client/dc.py       2013-11-15 22:39:52.000000000 +0100
++++ b/dtella/client/dc.py    2014-04-28 21:32:51.324702874 +0200
+@@ -669,18 +669,6 @@
+             # If we're responding to a RevConnect, disable errors
+             err_visible = False
+ 
+-#        elif self.isLeech():
+-#            # I'm a leech
+-#            err_visible = False
+-#            fail_cb(None)
+-#            return
+-
+-        if self.isLeech2(n):
+-            # I'm a leech
+-            err_visible = False
+-            fail_cb(None)
+-            return
+-
+         n.event_ConnectToMe(self.main, port, use_ssl, fail_cb)
+ 
+ 
+@@ -713,49 +701,8 @@
+                 fail_cb("user doesn't seem to exist.")
+             return
+ 
+-#        if self.isLeech():
+-#            # I'm a leech
+-#            err_visible = False
+-#            fail_cb(None)
+-#            return
+-
+-        if self.isLeech2(n):
+-            # I'm a leech
+-            err_visible = False
+-            fail_cb(None)
+-            return
+-
+         n.event_RevConnectToMe(self.main, fail_cb)
+ 
+-
+-    def isLeech(self):
+-        # If I don't meet the minimum share, yell and return True
+-
+-        osm = self.main.osm
+-        minshare = self.main.dcfg.minshare
+-
+-        if osm.me.shared < minshare:
+-            self.pushStatus(
+-                "*** You must share at least %s in order to download!  "
+-                "(You currently have %s)" %
+-                (format_bytes(minshare), format_bytes(osm.me.shared)))
+-            return True
+-
+-        return False
+-
+-    def isLeech2(self, node):
+-        osm = self.main.osm
+-
+-        minshare = self.main.dcfg.minshare
+-        if osm.me.shared * 4 < node.shared and osm.me.shared < minshare:
+-            self.pushStatus(
+-                "*** Nie mozesz pobierac od uzytkownikow udostepniajacych 4 razy wiecej niz Ty. Ograniczenie jest nieaktywne jezeli udostepnisz co najmniej %s. Aby pobrac od %s musisz udostepnic minimum %s "
+-                "(Obecnie udostepniasz %s)" %
+-                (format_bytes(minshare), node.nick, format_bytes(min(node.shared / 4, minshare)), format_bytes(osm.me.shared)))
+-            return True
+-
+-        return False
+-
+     def d_PublicMsg(self, text):
+ 
+         text = remove_dc_escapes(text)
+--- a/dtella.py 2011-06-22 18:43:43.000000000 +0200
++++ b/dtella.py      2013-11-22 20:58:24.119660354 +0100
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/python2
+ 
+ """
+ Dtella - Startup Module
